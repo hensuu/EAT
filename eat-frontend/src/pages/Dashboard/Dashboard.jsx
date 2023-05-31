@@ -51,15 +51,7 @@ const Dashboard = ({user, session, userDispatch}) => {
     const toast = useToast();
     const {isOpen: isCreateOpen, onOpen: onCreateOpen, onClose: onCreateClose} = useDisclosure();
 
-    const handleCreateGroup = (e) => {
-        toast({
-            description: 'Not implemented yet.🥵🥵🥺🥺',
-            status: 'warning',
-            duration: 3000,
-            isClosable: true,
-        });
 
-    }
 
     const CreateGroupModal = ({isOpen, onClose}) => {
 
@@ -157,7 +149,6 @@ const Dashboard = ({user, session, userDispatch}) => {
                                                 m={1}
                                                 variant={"solid"}
                                         >
-
                                             {group.name}
                                         </Button>
                                     )

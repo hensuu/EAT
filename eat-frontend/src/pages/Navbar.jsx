@@ -26,7 +26,7 @@ const Navbar = ({user, userDispatch}) => {
 
     return (
         <>
-            <Flex align="center" justify={"space-between"} padding={4}>
+            <Flex align="center" justify={"space-between"} padding={4} shadow={"md"}>
                 <Box>
                     <Heading>Eat!</Heading>
                 </Box>

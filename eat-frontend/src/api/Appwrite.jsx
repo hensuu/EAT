@@ -1,4 +1,5 @@
 import {Client as Appwrite, Databases, Account, Teams, Query} from "appwrite";
+import server_sdk from "node-appwrite";
 import {Server} from "../utils/config";
 import group from "../pages/Dashboard/Group.jsx";
 
@@ -58,16 +59,16 @@ let api = {
 
     deleteDocument: (databaseId, collectionId, documentId) => {
         return api.provider().database.deleteDocument(databaseId, collectionId, documentId);
-        },
+    },
 
-        // return sum + records
-        listRecords: (groupId) => {
-            return api.listDocuments(Server.databaseID, Server.collectionID, [
-                Query.equal('groupId', [groupId]),
-            ]).then((response) => {
-                console.log("list record", groupId, response);
-                return {sum: [], records: response.documents.reverse()}
-            })
+    // return sum + records
+    listRecords: (groupId) => {
+        return api.listDocuments(Server.databaseID, Server.collectionID, [
+            Query.equal('groupId', [groupId]),
+        ]).then((response) => {
+            console.log("list record", groupId, response);
+            return {sum: [], records: response.documents.reverse()}
+        })
         },
 
         createRecord: (groupId, name, data) => {
@@ -98,13 +99,31 @@ let api = {
         return api.provider().group.list();
     },
 
-    inviteGroupMember: (groupId, userId) => {
-        return api.provider().group.createMembership({
+    inviteGroupMember: (groupId, userId, email,) => {
+        //TODO: Using the node sdk because the client sdk is not working for this
+        //TODO: Change this because it is dangerous to use the secret
+
+        const client = new server_sdk.Client()
+            .setEndpoint(Server.endpoint)
+            .setProject(Server.project)
+            .setKey(Server.apiKey);
+
+        const teams = new server_sdk.Teams(client);
+
+        return teams.createMembership({
             teamId: groupId,
+            email: email,
             userId: userId,
-            roles: ["owner"],
-            url: "https://google.com", //TODO: Change this to the actual URL
+            roles: [],
+            url: "https://google.com"
         });
+
+        // return api.provider().group.createMembership({
+        //     teamId: groupId,
+        //     userId: userId,
+        //     roles: ["owner"],
+        //     url: "https://google.com", //TODO: Change this to the actual URL
+        // });
     },
 
     createGroup: (groupName) => {
@@ -125,16 +144,16 @@ let api = {
     getGroupInfo: (groupId) => {
         return api.listGroupMemberships(groupId).then((response) => {
             return api.getGroup(groupId).then((group) => {
-                    return {$id: groupId, members: response.memberships, name: group.name}
-                })
+                return {$id: groupId, members: response.memberships, name: group.name}
             })
-        },
+        })
+    },
 
 
-        // Appwrite only
-        updateGroupMembershipStatus: (groupId, memberId, userId, secret) => {
-            return api.provider().group.updateMembershipStatus(groupId, memberId, userId, secret);
-        },
+    // Appwrite only
+    updateGroupMembershipStatus: (groupId, memberId, userId, secret) => {
+        return api.provider().group.updateMembershipStatus(groupId, memberId, userId, secret);
+    },
 
 
     }

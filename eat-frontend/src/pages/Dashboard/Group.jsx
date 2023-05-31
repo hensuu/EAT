@@ -200,10 +200,17 @@ const Group = ({user, group, isGroupsLoading}) => {
         const [errorMessage, setErrorMessage] = useState("")
 
         const handleInvite = async () => {
+            if (email === "" || invitedUserId === "") {
+                toast({
+                    description: 'Please select a user',
+                    status: 'warning',
+                })
+                return
+            }
             setIsLoading(true)
             setIsError(false)
             try {
-                const res = await api.inviteGroupMember(groupId, invitedUserId)
+                const res = await api.inviteGroupMember(groupId, invitedUserId, email)
                 toast({
                     description: 'Invitation sent',
                     status: 'success',
@@ -227,7 +234,7 @@ const Group = ({user, group, isGroupsLoading}) => {
                     <AlertDialogBody>
                         <FormControl>
                             <FormLabel>Email address</FormLabel>
-                            <Input disabled={true} placeholder={"Email address"}
+                            <Input disabled={false} placeholder={"Email address"}
                                    onChange={(e) => setEmail(e.target.value)}></Input>
                         </FormControl>
                         <FormControl>
@@ -260,15 +267,15 @@ const Group = ({user, group, isGroupsLoading}) => {
     const Show_each_amount = ({member}) => {
         const sum = sumMemberValues(member.$id)
         return (
-            <Stat key={member.$id} mb="2" mr="50" flex="1">
+            <Stat key={member.$id}>
                 <Flex align="center">
-                <Avatar name={member.userName} size="sm" mr="4" />
-                <Box>
-                <StatLabel whiteSpace="nowrap">{member.userName}</StatLabel>
-                <StatNumber color={sum < 0 ? "red.500" : "teal.500"}>
-                    {sum < 0 ? `-${Math.abs(sum)}` : sum}
-                </StatNumber>
-                </Box>
+                    <Avatar name={member.userName} size="sm" mr="4"/>
+                    <Box>
+                        <StatLabel whiteSpace="nowrap">{member.userName}</StatLabel>
+                        <StatNumber color={sum < 0 ? "red.500" : "teal.500"}>
+                            {sum < 0 ? `-${Math.abs(sum)}` : sum}
+                        </StatNumber>
+                    </Box>
                 </Flex>
             </Stat>
         )
@@ -444,7 +451,7 @@ const Group = ({user, group, isGroupsLoading}) => {
     }, [group])
 
     return (
-        <Box w={"100%"}>
+        <>
             {isLoading || isGroupsLoading ?
                 <Center w={"100%"} h={"100vh"}>
                     <Spinner p={4}/>
@@ -457,10 +464,10 @@ const Group = ({user, group, isGroupsLoading}) => {
                         <Text p={4}>You have no group yet</Text>
                     </Center>
                     :
-                    <VStack flex={"max-content"} h={"max"}>
+                    <VStack flex={"max-content"} h={"max"} w={"100%"}>
                         <HStack spacing={4}>
                             <Heading>{group.name}</Heading>
-                            
+
 
                             <Menu>
                                 <MenuButton as={IconButton} icon={<SettingsIcon/>} variant='solid'>
@@ -472,14 +479,14 @@ const Group = ({user, group, isGroupsLoading}) => {
 
                         </HStack>
                         <InviteModal isOpen={isInviteOpen} onClose={onInviteClose}/>
-                        //show the amount of money each member owes
-                        <Box p="30px" color="black" mt="2" rounded="md">
-                        <Flex direction="row">
+                        {/*show the amount of money each member owes*/}
+
+                        <HStack p={4} spacing={8} overflowX={"auto"} w={"100%"} maxW={"max-content"}>
                             {members.map((member) => (
                                 <Show_each_amount key={member.$id} member={member}/>
                             ))}
-                        </Flex>
-                        </Box>
+                        </HStack>
+
                         {NewDataCard()}
                         {records.map((record) => (
                             <RecordCard key={record.$id} record={record}/>
@@ -487,7 +494,7 @@ const Group = ({user, group, isGroupsLoading}) => {
 
                     </VStack>
             }
-        </Box>
+        </>
     )
 };
 

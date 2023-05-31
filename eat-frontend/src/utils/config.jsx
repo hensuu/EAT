@@ -6,4 +6,5 @@ export const Server = {
     userCollectionID: import.meta.env.VITE_USER_COLLECTION_ID,
     collectionID: import.meta.env.VITE_RECORD_COLLECTION_ID,
     databaseID: import.meta.env.VITE_DATABASE_ID,
+    apiKey: import.meta.env.VITE_API_KEY,
 }
